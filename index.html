@@ -297,12 +297,6 @@
             start = Math.max(randomInt(Math.min(max,60)-Math.min(min,60))-1,0);
             let len = Math.min(max,randomInt(max-min)+min);
 
-            // randomize casing
-
-            //roll to see if anything is capitalized
-
-            //1-10, 1 = all caps, 2-5 = mixed caps, 6-9 = no caps, 10 = random caps
-
             pass = pass.substr(start,len);
 
             switch (randomInt(10)){
