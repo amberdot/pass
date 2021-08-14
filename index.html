@@ -1,0 +1,417 @@
+<html lang="en-US">
+<head>
+    <link href="style.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+    
+    <div class="overall">
+        <div class="col col1">
+            <h1>Random Password Generator</h1>
+            <form id="options">
+                <div class="formgroup">
+                    <label class="control">Type of Password: </label>
+                    <select class="passtype" id="passtype" onchange="typeChange()">
+                        <option value="w">Words</option>
+                        <option value="n">Horses</option>
+                        <option value="r">Randomized</option>
+                        <option value="k">Keysmash</option>
+                        <option value="e">Any</option>
+                    </select>
+                    <br/>
+                    <label class="control">Minimum Length: </label>
+                    <input type="number" min="4" max="60" id="minlength" name="minlength" value="6" />
+                    <br/>
+                    <label class="control">Maximum Length: </label>
+                    <input type="number" min="4" max="60" id="maxlength" name="maxlength" value="10" />
+                    <br class="keys"/>
+                    <br class="keys"/>
+                    <input class="keys" type="checkbox" id="include" name="include" value="include" checked />
+                    <label class="control keys">Include Numbers</label>
+                    <br class="nornd keys"/>
+                    <br class="nornd keys"/>
+                    <label class="control nornd keys" id="numamt">Number of Digits: </label>
+                    <input type="number" min="1" max="8" id="numlength" class="nornd keys" name="maxnum" value="1"/>
+                    <br class="nornd keys"/>
+                    <label class="control nornd keys" id="nornd">Number Placement:</label>
+                    <select class="passtype nornd keys" id="numtype">
+                        <option value="e">End</option>
+                        <option value="b">Beginning</option>
+                        <option value="r">Random</option>
+                        <option value="a">Any</option>
+                    </select>
+                    <br />
+                    <br />
+                    <button id="buttons" type="button" onclick="generatePassword()" >Generate!</button>
+                    
+                </div>
+            </form>
+        </div>
+        <div class="col col2">
+            <h1 class="pass">Your Password:</h1>
+            <div id="result">
+                
+                <div class="vert">
+                    <b><span class="tooltiptext" id="myTooltip" onmouseout="outFunc()"><p id="passgen" onclick="copy(this)">(press generate)</p></span></b>
+                    <i><p id="clicktocopy" style="display: none;">(click to copy)</p></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="dict.js"></script>
+    <script>
+
+        dict = data.toString().split(",");
+        smash = spam.toString().split(',');
+        const button = document.getElementById("buttons");
+        let newPass = document.getElementById("passgen");
+
+        function randomInt(max){
+            //1 to max, or 0
+            if (max == 0) return 0;
+            return Math.floor(Math.random() * max)+1;
+        }
+
+        let passtext = "(press generate)";
+
+        function outFunc() {
+            var g = document.getElementById("passgen");
+            g.innerText = passtext;
+        }
+
+        String.prototype.shuffle = function () {
+            var a = this.split(""),
+                n = a.length;
+
+            for(var i = n - 1; i > 0; i--) {
+                var j = Math.floor(Math.random() * (i + 1));
+                var tmp = a[i];
+                a[i] = a[j];
+                a[j] = tmp;
+            }
+            return a.join("");
+        }
+
+        function copy(that){
+            
+            var copyText = document.getElementById("passgen");
+            if (passtext == "(press generate)") return;
+            var tooltip = document.getElementById("myTooltip");
+            passtext = copyText.innerText.replace(/Copied: /g, '');
+
+            var inp = document.createElement('input');
+            document.body.appendChild(inp)
+            inp.value = that.textContent.replace(/Copied: /g, '');
+            inp.select();
+            document.execCommand('copy',false);
+            inp.remove();
+
+            if (!copyText.innerText.startsWith("Copied: ")) document.getElementById("passgen").innerText = "Copied: " + copyText.innerText;
+        }
+        
+        function typeChange() {
+            for (var i = 0; i < document.getElementsByClassName("keys").length; i++) document.getElementsByClassName("keys")[i].style.display = "";
+            for (var i = 0; i < document.getElementsByClassName("nornd").length; i++) document.getElementsByClassName("nornd")[i].style.display = "";
+            var items = document.getElementsByClassName("nornd");
+            var sw = document.getElementById("passtype").value;
+            let displayValue;
+            switch (sw){
+                case "w": 
+                    displayValue = "";
+                    items = document.getElementsByClassName("nornd");
+                    dict = data.toString().split(",");
+                    break;
+                case "n":
+                    displayValue = "";
+                    items = document.getElementsByClassName("nornd");
+                    dict = data2.toString().split(",");
+                    break;
+                case "k":
+                    items = document.getElementsByClassName("keys");
+                    displayValue = "none";
+                    dict = data.toString().split(",");
+                    break;
+                case "r": 
+                    displayValue = "none";
+                    items = document.getElementsByClassName("nornd");
+                    dict = data.toString().split(",");
+                    break;
+                default:
+                    if (randomInt(2) == 1) dict = data.toString().split(",");
+                    else dict = data2.toString().split(",");
+                    items = document.getElementsByClassName("nornd");
+                    displayValue = "none";
+                    break;
+            }
+
+            for (var i = 0; i < items.length; i++) items[i].style.display = displayValue;
+        }
+
+        function generateSwitch (type, min, max, inc, num, spot) {
+            let newPass;
+            if (!inc) {
+                num = 0;
+            }
+            switch (type){
+                case "w": case "n":
+                    // user wants actual word password
+                    newPass = generateWordPassword(min, max, num, spot);
+                    break;
+
+                case "r":
+                    //user wants random character password
+                    newPass = generateRandomPassword(min, max, inc);
+                    break;
+                case "k":
+                    newPass = generateKeysmashPassword(min, max);
+                    break;
+                case "e":
+                default:
+                    //user wants either random character or random word
+
+                    if (randomInt(2) == 1) dict = data.toString().split(",");
+                    else dict = data2.toString().split(",");
+                    if (inc) num = randomInt(4);
+
+                    switch (randomInt(3)){
+                        case 2:
+                            newPass = generateWordPassword(min, max, num, "a");
+                            break;
+
+                        case 1:
+                            newPass = generateKeysmashPassword(min, max);
+                            break;
+                        default:
+                            newPass = generateRandomPassword(min, max, inc);
+                        break;
+
+                    }
+                    break;
+            }
+
+            passtext = newPass;
+            return newPass;
+        }
+
+        String.prototype.InsertAt=function(CharToInsert,Position){
+            return this.slice(0,Position) + CharToInsert + this.slice(Position)
+        }
+
+        function generateWordPassword(min, max, num, spot){
+
+            if (spot == "a"){
+                switch (randomInt(3)){
+                    case 1:
+                        spot = "e"
+                        break;
+                    case 2: 
+                        spot = "b"
+                        break;
+                    default: 
+                        spot = "r"
+                        break;
+                }
+            }
+            let dict2 = dict.filter(a=>a.length >= Math.min(16,min) && a.length <= max);
+            dict2 = dict2[randomInt(dict2.length)-1];
+            let newnum = "";
+            if (num == 0){}
+            else if (num == 1)
+                newnum += randomInt(9).toString();
+            else {
+                for (var k = 1; k <= num; k++)
+                    if (k == num)
+                        newnum += (randomInt(10)-1).toString();
+                    else
+                        newnum += randomInt(9).toString();
+            }
+
+            let rn = 1;
+            let newstr = "";
+            switch (spot){
+                case "e": 
+                    dict2+= newnum;
+                    break;
+                case "b": 
+                    dict2 = newnum + dict2;
+                    break;
+                case "r": default:
+                    for (var j = 0; j < num; j++){
+                        rn = randomInt(dict2.length)-1;
+                        newstr = dict2.slice(0,rn) + newnum[j] + dict2.slice(rn);
+                        dict2 = newstr;
+                    }
+                    break;
+            }
+            return fixCase(dict2);
+        }
+
+        function fixCase(inp){
+            return inp.slice(0,1).toUpperCase() + inp.slice(1);
+        }
+
+        function generateRandomPassword(min, max, inc){
+
+            let pass = '';
+            let str = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ@#$%(){}`~*!/_-abcdefghijklmnopqrstuvwxyz@#$%(){}`~*!/_-';
+
+            let lee = min;
+            if (inc) str+="01234567890123456789";
+            
+            if (min != max)
+            lee = randomInt(max-min+1)+min-1;
+
+            for (i = 0; i < lee; i++) {
+                var char = Math.floor(Math.random() * str.length);
+                  
+                pass += str[char];
+            }
+
+            return pass;
+        }
+
+        String.prototype.replaceAt = function(index, replacement) {
+            return this.substr(0, index) + replacement + this.substr(index + replacement.length);
+        }
+
+        function generateKeysmashPassword(min, max){
+            let pass = '';
+            if (randomInt(2) == 1){
+                let temp = randomInt(smash.length)-1;
+                let temp2 = randomInt(smash.length)-1;
+                for (var i = 0; i < 3; i++)
+                    pass += smash[temp];
+                for (var i = 0; i < 3; i++)
+                    pass += smash[temp2];
+            }
+            else
+                for (var i = 0; i < 5; i++)
+                    pass += smash[randomInt(smash.length)-1];
+        
+            for (var i = 0; i < 2; i++)
+                pass = pass.shuffle();
+            pass += smash[randomInt(smash.length)-1];
+            pass = pass.shuffle();
+            if (pass.length > 60) pass = pass.substr(0,60);
+
+            let start = 0;
+            start = Math.max(randomInt(Math.min(max,60)-Math.min(min,60))-1,0);
+            let len = Math.min(max,randomInt(max-min)+min);
+
+            // randomize casing
+
+            //roll to see if anything is capitalized
+
+            //1-10, 1 = all caps, 2-5 = mixed caps, 6-9 = no caps, 10 = random caps
+
+            pass = pass.substr(start,len);
+
+            switch (randomInt(10)){
+                case 10:
+                    for (var i = 0; i < randomInt(Math.floor(pass.length/3)); i++){
+                        let te = randomInt(pass.length)-1;
+                        pass = pass.replaceAt(te, pass[te].toUpperCase());
+                    }
+                        
+                    break;
+                case 2: case 3: case 4: case 5: 
+                    let startpoint = 0;
+                    let endpoint = 0;
+                    let startrnd;
+                    let endrnd;
+                    let rnd1 = randomInt(8);
+                    let rnd2 = randomInt(8);
+
+                    switch (rnd1){
+                        case 2: case 3: case 1:
+                        //near start
+                        startrnd = randomInt(Math.floor(pass.length/4))-1;
+                            break;
+                        case 4: case 5: 
+                        //middle
+                        startrnd = randomInt(Math.floor(pass.length*2/3))-1;
+                        startpoint = Math.floor(pass.length/2);
+                            break;
+                        case 6:
+                        //near end
+                        startrnd = randomInt(Math.floor(pass.length/4))-1;
+                        startpoint = Math.floor(pass.length*3/4);
+                            break;
+                        default: 
+                        startrnd = 0;
+                            break;
+                    }
+                    switch (rnd2){
+                        case 1:
+                        //near start
+                        endrnd = randomInt(Math.floor(pass.length/4))-1;
+                            break;
+                        case 2: case 3: 
+                        //middle
+                        endrnd = randomInt(Math.floor(pass.length*2/3))-1;
+                        endpoint = Math.floor(pass.length/2);
+                            break;
+                        case 4: case 5: case 6:
+                        //near end
+                        endrnd = randomInt(Math.floor(pass.length/4))-1;
+                        endpoint = Math.floor(pass.length*3/4);
+                            break;
+                        default:
+                        //end
+                        endrnd = pass.length;
+                            break;
+                    }
+
+                    let atstart = false;
+                    actualstart = Math.min(pass.length,Math.min(startpoint+startrnd, endpoint+endrnd));
+                    actualend =  Math.min(pass.length,Math.max(startpoint+startrnd, endpoint+endrnd));
+                    if (actualstart == 0)
+                        atstart = true;
+
+                    if (rnd1 == rnd2 || startpoint == endpoint || actualstart == actualend){
+                        for (var i = 0; i < pass.length*2/3; i++)
+                            if (randomInt(4) == 1){
+                                let asd = randomInt(pass.length)-1;
+                                pass = pass.replaceAt(asd, pass[asd].toUpperCase());
+                            }
+                    } else if (randomInt(6) == 6){
+                        pass = pass.toUpperCase();
+                    } else {
+                        if (!atstart)
+                            pass = pass.replaceAt(actualstart, pass.substr(actualstart,Math.abs(actualend-actualstart)).toUpperCase());
+                        else
+                            pass = pass.replaceAt(0, pass.substr(0,Math.min(actualstart,actualend)).toUpperCase());
+                    }
+
+                    break;
+                default:
+                    break;
+            }
+
+            return pass;
+        }
+
+        function generatePassword() {
+            let minlength = parseInt(document.getElementById("minlength").value) || 6,
+                maxlength = parseInt(document.getElementById("maxlength").value) || 12,
+                include = document.getElementById("include").checked,
+                numlength = parseInt(document.getElementById("numlength").value) || 1,
+                type = document.getElementById("passtype").value,
+                placement = document.getElementById("numtype").value;
+
+            if (minlength > maxlength){
+                return alert("Minimum Length can not exceed Maximum length.");
+            }
+
+            document.getElementById("clicktocopy").style.display = "";
+            document.getElementById("passgen").innerHTML = `${generateSwitch(type, minlength, maxlength, include, numlength, placement)}`;
+            if ((minlength > 16 || maxlength > 16) && type == "w") document.getElementById("clicktocopy").innerHTML = "(click to copy)<br>(note: no words are longer than 16 letters)";
+            else if ((minlength > 16 || maxlength > 16) && type == "n") document.getElementById("clicktocopy").innerHTML = "(click to copy)<br>(note: only one horse name is 16+ letters)";
+            else document.getElementById("clicktocopy").innerHTML = "(click to copy)";
+        }
+
+        
+
+
+    </script>
+</body>
+</html>

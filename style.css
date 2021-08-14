@@ -1,0 +1,143 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato&family=Roboto&display=swap');
+
+* {
+    font-family: "Lato", sans-serif;
+    font-size: 18px;
+}
+
+h1 {
+    font-family: "Roboto", sans-serif;
+    font-size: 34px;
+}
+
+.overall {
+    max-width: 800px;
+    min-width: 300px;
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    left: 50%;
+    position: absolute;
+    right: 50%;
+    transform: translate(-50%, 0px);
+}
+
+.col {
+    max-width: 50%;
+    min-width: 300px;
+    width: 50%;
+    margin: 0px;
+    padding: 0px;
+    float: left;
+}
+
+body {
+    margin: 0px;
+    padding: 0px;
+}
+
+.control {
+    line-height: 30px;
+}
+
+input {
+    max-width: 150px;
+    min-width: 100px;
+}
+input[type="checkbox"]{
+    min-width: 20px;
+}
+
+h1, p, form, i {
+    text-align: center;
+}
+
+p {
+    font-size: 22px;
+}
+
+i p {
+    font-size: 16px;
+}
+
+#buttons {
+    max-width:200px;
+    width: 200px;
+    height: 40px;
+    font-family: "Roboto", sans-serif;
+    font-weight: bold;
+    font-size: 20px;
+    letter-spacing: 1px;
+}
+
+.result {
+    display: table;
+    width: 100%;
+}
+
+.vert {
+    height: 300px;
+    width: 400px;
+    min-width: 100%;
+    vertical-align: middle;
+    display: table-cell;
+    -ms-word-break: break-all;
+    word-break: break-all;
+    white-space: pre-wrap
+}
+
+@media (max-width: 800px) {
+    .overall {
+        min-width: 300px;
+        max-width: 800px;
+    }
+    .col {
+        padding: 10px;
+        left: 50%;
+        width: 100%;
+        float: none;
+        margin: 0 auto;
+    }
+
+    .vert {
+        height: 40px;
+    }
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .tooltip .tooltiptext {
+    visibility: hidden;
+    width: 140px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    bottom: 150%;
+    left: 50%;
+    margin-left: -75px;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  
+  .tooltip .tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #555 transparent transparent transparent;
+  }
+  
+  .tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+  }
